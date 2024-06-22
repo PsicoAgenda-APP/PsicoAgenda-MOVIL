@@ -57,12 +57,15 @@ export class SoportepacientePage implements OnInit {
   ngOnInit() {
     let parametros = this.router.getCurrentNavigation();
     if (parametros?.extras.state) {
-      this.idTipo = parametros?.extras.state['idTipoUsuario'];
+      this.idTipo = parametros?.extras.state['idTipo'];
       this.idPaciente = parametros?.extras.state['idPaciente'];
       this.idUsuario = parametros?.extras.state['idUsuario'];
       this.login = parametros?.extras.state['login'];
       this.correo = parametros?.extras.state['correo'];
       this.idPersona = parametros?.extras.state['idPersona'];
+      console.log("ID USUARIO" + this.idUsuario)
+      console.log("ID TIPO" + this.idTipo)
+      console.log("ID PACIENTE" + this.idPaciente)
     }
     if (!this.login) {
       this.router.navigate(['home']);

@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { ApiService } from 'src/app/services/api.service';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-commitpay',
@@ -16,72 +18,142 @@ export class CommitpayPage implements OnInit {
   idCita: number = 0;
   idPaciente: number = 0;
   login: boolean = false;
-  idPaciente2: number = 0;
+  correo: string = '';
+  nombrePsicologo: string = '';
+  fechaCita: string = '';
+  horaCita: string = '';
+  idTipo: number = 0;
+  idUsuario: number = 0;
+  error: boolean = false;
+  idPersona: number = 0;
 
   constructor(private router: Router, private route: ActivatedRoute, private apiService: ApiService) { }
 
   ngOnInit() {
     this.route.queryParams.subscribe((params) => {
-      //this.token_ws = params['token_ws'];
-      let parametros = this.router.getCurrentNavigation();
-      if (parametros?.extras.state) {
-        this.token_ws = parametros?.extras.state['token_ws'];
-      }
-      this.idCita = JSON.parse(localStorage.getItem('idCita') || '0');
-      this.idPaciente = JSON.parse(localStorage.getItem('idPaciente') || '0');
-      this.login = JSON.parse(localStorage.getItem('login') || 'false');
-      console.log(this.idCita)
-      console.log(this.idPaciente)
-      if (this.token_ws) {
-        this.apiService.commitTransaction(this.token_ws).subscribe(
-          (response) => {
-            console.log("Pago Correcto")
-            if (response.status === 'AUTHORIZED' && response.response_code === 0) {
-              this.transactionDetail = {
-                card_number: response.card_detail.card_number,
-                transaction_date: new Date(response.transaction_date).toLocaleString(),
-                state: response.status === 'AUTHORIZED' ? 'Aceptado' : 'Rechazado',
-                pay_type: this.getPaymentType(response.payment_type_code),
-                amount: this.formatAmount(response.amount),
-                authorization_code: response.authorization_code,
-                buy_order: response.buy_order,
-              };
-              this.apiService.confirmarCita(this.idPaciente, 1,this.idCita).subscribe(
-                response => {
-                  console.log('Cita Agendada Correctamente', response);
-                },
-                error => {
-                  console.error('Error al agendar la cita', error);
-                }
-              );
-              this.reloadOnce();
-            } else {
-              this.errorMessage = 'ERROR EN LA TRANSACCIÓN, SE RECHAZA LA TRANSACCIÓN.';
-            }
-          },
-          (error) => {
-            this.errorMessage = 'ERROR EN LA TRANSACCIÓN, SE CANCELO EL PAGO.';
-          }
-        );
-      } else {
-        this.errorMessage = 'ERROR EN LA TRANSACCIÓN, SE CANCELO EL PAGO.';
+      try {
+        let parametros = this.router.getCurrentNavigation();
+        if (parametros?.extras.state) {
+          this.token_ws = parametros?.extras.state['token_ws'];
+        }
+        this.idCita = JSON.parse(localStorage.getItem('idCita') || '0');
+        this.idPaciente = JSON.parse(localStorage.getItem('idPaciente') || '0');
+        this.login = JSON.parse(localStorage.getItem('login') || 'false');
+        this.correo = JSON.parse(localStorage.getItem('correo') || '');
+        this.nombrePsicologo = JSON.parse(localStorage.getItem('nombrePsicologo') || '');
+        this.fechaCita = JSON.parse(localStorage.getItem('fechaCita') || '');
+        this.horaCita = JSON.parse(localStorage.getItem('horaCita') || '');
+        this.idPersona = JSON.parse(localStorage.getItem('idPersona') || '0');
+        this.idUsuario = JSON.parse(localStorage.getItem('idUsuario') || '0');
+        console.log("ID USUARIO: " + this.idUsuario)
+        console.log(this.idCita);
+        console.log(this.idPaciente);
+        console.log(this.correo);
+        console.log(this.nombrePsicologo);
+        console.log(this.fechaCita);
+        console.log(this.horaCita);
+        
+        if (this.token_ws) {
+          this.apiService.commitTransaction(this.token_ws).subscribe(
+            (response) => {
+              console.log("Pago Correcto");
+              if (response.status === 'AUTHORIZED' && response.response_code === 0) {
+                this.transactionDetail = {
+                  card_number: response.card_detail.card_number,
+                  transaction_date: new Date(response.transaction_date).toLocaleString(),
+                  state: response.status === 'AUTHORIZED' ? 'Aceptado' : 'Rechazado',
+                  pay_type: this.getPaymentType(response.payment_type_code),
+                  amount: this.formatAmount(response.amount),
+                  authorization_code: response.authorization_code,
+                  buy_order: response.buy_order,
+                };
+                this.apiService.confirmarCita(this.idPaciente, 1, this.idCita).subscribe(
+                  response => {
+                    console.log('Cita Agendada Correctamente', response);
+                  },
+                  error => {
+                    console.error('Error al agendar la cita', error);
+                  }
+                );
+                this.sendEmail();
+                localStorage.clear();
+              } else {
+                this.errorMessage = 'ERROR EN LA TRANSACCIÓN, SE RECHAZA LA TRANSACCIÓN.';
+                this.error = true;
+                localStorage.clear();
+              }
+            },
+            (error) => {
+              this.errorMessage = 'ERROR EN LA TRANSACCIÓN, SE CANCELO EL PAGO.';
+              this.error = true;
+              localStorage.clear();
+            } 
+          );
+        } else {
+          this.errorMessage = 'ERROR EN LA TRANSACCIÓN, SE CANCELO EL PAGO.';
+          this.error = true;
+          localStorage.clear();
+        }
+      } catch (error) {
+        console.error('Error parsing JSON', error);
+        this.router.navigate(['home']);
       }
     });
   }
 
-  reloadOnce() {
-    // Verifica si la página ya ha sido recargada
-    const reloaded = localStorage.getItem('pageReloaded');
+  sendEmail() {
+    const subject = 'Hora Agendada en PsicoAgenda';
 
-    if (!reloaded) {
-      // Si no ha sido recargada, recargarla y establecer la bandera en el almacenamiento local
-      localStorage.setItem('pageReloaded', 'true');
-      location.reload();
+    const text = 'Hola!,\n\nAgendaste una hora a traves de PsicoAgenda APP, revisa los detalles.' +
+      '\n\nPsicologo: ' + this.nombrePsicologo +
+      '\n\nFecha: ' + this.fechaCita +
+      '\n\nHora: ' + this.horaCita +
+      '\n\nTe Saluda,\nEquipo de PsicoAgenda APP.';
+
+    const html = `
+              <p>Hola!,</p>
+              <p>Agendaste una hora a traves de PsicoAgenda APP, revisa los detalles.</p>
+              <p><strong>Psicologo: ${this.nombrePsicologo}</strong></p>
+              <p><strong>Fecha: ${this.fechaCita}</strong></p>
+              <p><strong>Hora: ${this.horaCita}</strong></p>
+              <p>Te Saluda,</p>
+              <p>Equipo de PsicoAgenda APP.</p>
+          `;
+
+    this.apiService.sendEmail(this.correo, subject, text, html).subscribe(
+      response => {
+        console.log('Email Enviado Correctamente', response);
+      },
+      error => {
+        console.error('Error al enviar correo', error);
+      }
+    );
+
+  }
+
+  downloadPDF() {
+    const element = document.getElementById('tbl-transaction-detail');
+
+    if (element) {
+      const scale = 2; // Aumenta este valor para mejorar la calidad
+      html2canvas(element, { scale }).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('landscape', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+
+        // Calcular nuevas dimensiones de la imagen para que se ajuste a la página A4 en landscape
+        const imgWidth = pdfWidth - 20; // margen de 10mm en cada lado
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight); // agregar la imagen con márgenes
+        pdf.save('Comprobante.pdf');
+      });
     } else {
-      // Si ya ha sido recargada, eliminar la bandera
-      localStorage.removeItem('pageReloaded');
+      console.error('El elemento con id "tbl-transaction-detail" no se encontró.');
     }
   }
+
 
   toggleOptions() {
     this.showOptions = !this.showOptions;
@@ -93,13 +165,15 @@ export class CommitpayPage implements OnInit {
 
 
   goHome() {
-    console.log("Login: ", this.login)
-    console.log("IdPaciente: ", this.idPaciente)
     if (this.login) {
       let parametros: NavigationExtras = {
         state: {
           login: this.login,
-          idPaciente: this.idPaciente
+          idPaciente: this.idPaciente,
+          correo: this.correo,
+          idUsuario: this.idUsuario,
+          idTipo: this.idTipo,
+          idPersona: this.idPersona
         },
         replaceUrl: true
       }
@@ -110,6 +184,63 @@ export class CommitpayPage implements OnInit {
       }
       this.router.navigate(['home'], parametros);
     }
+  }
+
+  goSoporte () {
+    let parametros: NavigationExtras = {
+      state: {
+        login: this.login,
+        idPaciente: this.idPaciente,
+        correo: this.correo,
+        idUsuario: this.idUsuario,
+        idTipo: this.idTipo,
+        idPersona: this.idPersona
+      },
+      replaceUrl: true
+    }
+    this.router.navigate(['soportepaciente'], parametros);
+  }
+
+  logout() {
+    this.login = false;
+    let parametros: NavigationExtras = {
+      state: {
+        login: this.login
+      },
+      replaceUrl: true
+    }
+    this.router.navigate(['home'], parametros);
+  }
+
+  goHistorial() {
+    console.log('Login: ', this.login)
+    let parametros: NavigationExtras = {
+      state: {
+        login: this.login,
+        idPaciente: this.idPaciente,
+        correo: this.correo,
+        idUsuario: this.idUsuario,
+        idTipo: this.idTipo,
+        idPersona: this.idPersona
+      },
+      replaceUrl: true
+    }
+    this.router.navigate(['atencionespaciente'], parametros);
+  }
+
+  goEditar () {
+    let parametros: NavigationExtras = {
+      state: {
+        login: this.login,
+        idPaciente: this.idPaciente,
+        correo: this.correo,
+        idUsuario: this.idUsuario,
+        idTipo: this.idTipo,
+        idPersona: this.idPersona
+      },
+      replaceUrl: true
+    }
+    this.router.navigate(['editarpaciente'], parametros);
   }
 
   private getPaymentType(code: string): string {
@@ -125,6 +256,5 @@ export class CommitpayPage implements OnInit {
   private formatAmount(amount: number): string {
     return amount.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
   }
-
 
 }

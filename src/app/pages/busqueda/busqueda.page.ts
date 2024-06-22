@@ -39,7 +39,7 @@ export class BusquedaPage implements OnInit {
     }, 1500);
     let parametros = this.router.getCurrentNavigation();
     if (parametros?.extras.state) {
-      this.idTipo = parametros?.extras.state['idTipoUsuario'];
+      this.idTipo = parametros?.extras.state['idTipo'];
       this.idPaciente = parametros?.extras.state['idPaciente'];
       this.idUsuario = parametros?.extras.state['idUsuario'];
       this.login = parametros?.extras.state['login'];
@@ -109,8 +109,17 @@ export class BusquedaPage implements OnInit {
     this.currentPage = page;
   }
 
+  async especialidades() {
+    let data = this.apiService.especilidades();
+    let respuesta = await lastValueFrom (data);
+    let jsonTexto = JSON.stringify(respuesta);
+    let json = JSON.parse(jsonTexto);
+    for (let x = 0; x < json.length; x++) {
+      this.lista_especialidades.push(json[x]);
+    }
+  }
+
   goHome() {
-    console.log("Login: ", this.login)
     if (this.login) {
       let parametros: NavigationExtras = {
         state: {
@@ -132,14 +141,30 @@ export class BusquedaPage implements OnInit {
     }
   }
 
-  async especialidades() {
-    let data = this.apiService.especilidades();
-    let respuesta = await lastValueFrom (data);
-    let jsonTexto = JSON.stringify(respuesta);
-    let json = JSON.parse(jsonTexto);
-    for (let x = 0; x < json.length; x++) {
-      this.lista_especialidades.push(json[x]);
+  goSoporte () {
+    let parametros: NavigationExtras = {
+      state: {
+        login: this.login,
+        idPaciente: this.idPaciente,
+        correo: this.correo,
+        idUsuario: this.idUsuario,
+        idTipo: this.idTipo,
+        idPersona: this.idPersona
+      },
+      replaceUrl: true
     }
+    this.router.navigate(['soportepaciente'], parametros);
+  }
+
+  logout() {
+    this.login = false;
+    let parametros: NavigationExtras = {
+      state: {
+        login: this.login
+      },
+      replaceUrl: true
+    }
+    this.router.navigate(['home'], parametros);
   }
 
   goHistorial() {
@@ -172,18 +197,6 @@ export class BusquedaPage implements OnInit {
     }
     this.router.navigate(['editarpaciente'], parametros);
   }
-
-  logout() {
-    this.login = false;
-    let parametros: NavigationExtras = {
-      state: {
-        login: this.login
-      },
-      replaceUrl: true
-    }
-    this.router.navigate(['home'], parametros);
-  }
-
 
   async buscarPsicologo() {
     console.log(this.mdl_dato)

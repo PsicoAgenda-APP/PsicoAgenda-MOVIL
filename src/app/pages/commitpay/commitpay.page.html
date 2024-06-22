@@ -1,57 +1,110 @@
-<ion-header [translucent]="true">
-  <ion-toolbar class="barra">
-  </ion-toolbar>
-</ion-header>
+<!-- Agregar el menú -->
+<ion-menu contentId="main-content">
+  <ion-header>
+    <ion-toolbar class="barra">
+      <ion-title>Opciones</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content class="ion-padding">
+    <ion-list>
+      <ion-item button (click)="goHome()">
+        <ion-icon slot="start" name="home"></ion-icon>
+        <ion-label>Inicio</ion-label>
+      </ion-item>
+      <ion-item button (click)="goEditar()">
+        <ion-icon slot="start" name="pencil"></ion-icon>
+        <ion-label>Editar Tus Datos</ion-label>
+      </ion-item>
+      <ion-item button (click)="goHistorial()">
+        <ion-icon slot="start" name="calendar"></ion-icon>
+        <ion-label>Mi historial</ion-label>
+      </ion-item>
+      <ion-item button (click)="goSoporte()">
+        <ion-icon slot="start" name="construct"></ion-icon>
+        <ion-label>Soporte</ion-label>
+      </ion-item>
+      <ion-item button (click)="logout()">
+        <ion-icon slot="start" name="log-out"></ion-icon>
+        <ion-label>Cerrar Sesión</ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-menu>
 
-<ion-content [fullscreen]="true">
-  <div *ngIf="transactionDetail; else errorTemplate">
-    <table id="tbl-transaction-detail">
-      <caption>Detalle de Pago: <strong>SUCCESS PAY</strong></caption>
-      <thead>
-        <tr hidden>
-          <th scope="col"></th>
-          <th scope="col"></th>
-          <th scope="col"></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>Estado:</strong></td>
-          <td>{{ transactionDetail.state }}</td>
-        </tr>
-        <tr>
-          <td><strong>Fecha:</strong></td>
-          <td>{{ transactionDetail.transaction_date }}</td>
-        </tr>
-        <tr>
-          <td><strong>N° de tarjeta:</strong></td>
-          <td>XXXX XXXX XXXX {{ transactionDetail.card_number }}</td>
-        </tr>
-        <tr>
-          <td><strong>Tipo de Pago:</strong></td>
-          <td>{{ transactionDetail.pay_type }}</td>
-        </tr>
-        <tr>
-          <td><strong>Monto Pagado:</strong></td>
-          <td>{{ transactionDetail.amount }}</td>
-        </tr>
-        <tr>
-          <td><strong>Comprobante:</strong></td>
-          <td>{{ transactionDetail.authorization_code }}</td>
-        </tr>
-        <tr>
-          <td><strong>N° Orden:</strong></td>
-          <td>{{ transactionDetail.buy_order }}</td>
-        </tr>
-      </tbody>
-    </table>
-    <ion-button class="botonpago" (click)="goHome()">Volver al Inicio</ion-button>
-  </div>
-  
-  <ng-template #errorTemplate>
-    <div>
-      <h2>{{ errorMessage }}</h2>
-      <ion-button class="botonpago" (click)="goHome()">Volver al Inicio</ion-button>
+<!-- Contenido principal -->
+<div class="ion-page" id="main-content">
+  <ion-header [translucent]="true">
+    <ion-toolbar class="barra">
+      <ion-buttons slot="start">
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content>
+    <div *ngIf="transactionDetail; else errorTemplate">
+      <table id="tbl-transaction-detail">
+        <caption>Detalle de Pago: <strong>SUCCESS PAY</strong></caption>
+        <thead>
+          <tr hidden>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Estado:</strong></td>
+            <td>{{ transactionDetail.state }}</td>
+          </tr>
+          <tr>
+            <td><strong>Fecha Pago:</strong></td>
+            <td>{{ transactionDetail.transaction_date }}</td>
+          </tr>
+          <tr>
+            <td><strong>N° de tarjeta:</strong></td>
+            <td>XXXX XXXX XXXX {{ transactionDetail.card_number }}</td>
+          </tr>
+          <tr>
+            <td><strong>Tipo de Pago:</strong></td>
+            <td>{{ transactionDetail.pay_type }}</td>
+          </tr>
+          <tr>
+            <td><strong>Monto Pagado:</strong></td>
+            <td>{{ transactionDetail.amount }}</td>
+          </tr>
+          <tr>
+            <td><strong>Comprobante:</strong></td>
+            <td>{{ transactionDetail.authorization_code }}</td>
+          </tr>
+          <tr>
+            <td><strong>N° Orden:</strong></td>
+            <td>{{ transactionDetail.buy_order }}</td>
+          </tr>
+          <tr>
+            <td><strong>Psicologo:</strong></td>
+            <td>{{ nombrePsicologo }}</td>
+          </tr>
+          <tr>
+            <td><strong>Fecha Cita:</strong></td>
+            <td>{{ fechaCita }}</td>
+          </tr>
+          <tr>
+            <td><strong>Hora Cita:</strong></td>
+            <td>{{ horaCita }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  </ng-template>
-</ion-content>
+    <table class="botones">
+      <ion-button *ngIf="transactionDetail" class="boton" (click)="goHome()">Volver</ion-button>
+      <ion-button *ngIf="transactionDetail" class="boton" (click)="downloadPDF()">Descargar Comprobante</ion-button>
+    </table>
+    <ng-template #errorTemplate>
+      <div class="center-content">
+        <h2>{{ errorMessage }}</h2>
+        <ion-button *ngIf="error"  class="boton" (click)="goHome()">Volver</ion-button>
+      </div>
+    </ng-template>
+  </ion-content>
+</div>

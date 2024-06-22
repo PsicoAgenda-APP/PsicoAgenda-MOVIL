@@ -30,7 +30,7 @@ export class ClientePage implements OnInit {
   async ngOnInit() {
     let parametros = this.router.getCurrentNavigation();
     if (parametros?.extras.state) {
-      this.idTipo = parametros?.extras.state['idTipoUsuario'];
+      this.idTipo = parametros?.extras.state['idTipo'];
       this.idPaciente = parametros?.extras.state['idPaciente'];
       this.idUsuario = parametros?.extras.state['idUsuario'];
       this.login = parametros?.extras.state['login'];

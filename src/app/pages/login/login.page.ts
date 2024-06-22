@@ -62,7 +62,7 @@ export class LoginPage implements OnInit {
               let parametros: NavigationExtras = {
                 state: {
                   idUsuario: this.idUsuario,
-                  idTipoUsuario: this.idTipo,
+                  idTipo: this.idTipo,
                   login: this.login2,
                   correo: this.correo,
                   idPersona: this.idPersona
@@ -74,7 +74,7 @@ export class LoginPage implements OnInit {
               let parametros: NavigationExtras = {
                 state: {
                   idUsuario: this.idUsuario,
-                  idTipoUsuario: this.idTipo,
+                  idTipo: this.idTipo,
                   login: this.login2
                 },
                 replaceUrl: true
