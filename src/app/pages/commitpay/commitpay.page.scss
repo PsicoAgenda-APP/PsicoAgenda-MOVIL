@@ -1,0 +1,85 @@
+.barra {
+    --background: linear-gradient(90deg, rgba(140,213,215,1) 0%, rgba(13,115,119,1) 100%);
+}
+
+table {
+    margin-top: 5%;
+    width: 100%;
+    /* Ancho de la tabla */
+    border-collapse: collapse;
+    /* Elimina el espacio entre las celdas */
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+    /* Sombra ligera para darle profundidad */
+    /* Centra la tabla horizontalmente */
+    max-width: 650px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  /* Estilizando los encabezados de la tabla */
+  th {
+    background-color: #93a2a5;
+    /* Color de fondo para los encabezados */
+    color: #ffffff;
+    /* Color del texto para los encabezados */
+    font-weight: bold;
+    /* Texto en negrita para los encabezados */
+    padding: 12px 15px;
+    /* Espaciado interno para los encabezados */
+    text-align: left;
+    /* Alineación del texto a la izquierda */
+  }
+  
+  /* Estilizando las celdas de datos */
+  td {
+    background-color: #fff;
+    /* Color de fondo para las celdas de datos */
+    color: #666;
+    /* Color del texto para las celdas de datos */
+    padding: 10px 15px;
+    /* Espaciado interno para las celdas */
+    border-top: 1px solid #ddd;
+    /* Borde superior para separar las celdas */
+  }
+  
+  /* Estilizando las filas al pasar el mouse */
+  tr:hover {
+    background-color: #f9f9f9;
+    /* Cambio de color de fondo al pasar el mouse */
+  }
+  
+  tr:nth-child(odd) td {
+    background-color: #cae7e0;
+    /* Color de fondo para las celdas pares */
+  }
+  
+  /* Estilo para las celdas impares */
+  tr:nth-child(even) td {
+    background-color: #fff;
+    /* Color de fondo para las celdas impares */
+  }
+
+  .imagen_carga {
+    width: 10%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 15%;
+
+  }
+
+  .botonpago {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    --background: #32E0C4;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    text-transform: capitalize !important;
+
+  }
+
+  .error {
+    margin-left: auto;
+    margin-right: auto;
+    justify-content: center;
+    max-width: 80%;
+  }

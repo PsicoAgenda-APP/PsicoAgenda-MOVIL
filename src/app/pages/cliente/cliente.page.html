@@ -1,0 +1,21 @@
+<ion-header [translucent]="true">
+  <ion-toolbar class="barra">
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <h1 class="texto-home">PsicoAgenda</h1>
+  <h2 class="subtexto">¡Bienvenido {{ nombre }}!</h2>
+  <ion-button (click)="buscar()" expand="block">Reserva una hora</ion-button>
+  <ion-card class="citasencurso">
+    <ion-card-header>
+      <!--Próxima Cita Asignada-->
+      <ion-card-title>Próxima Cita</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      Fecha: <strong>{{ proximaCita.fecha }}</strong><br />
+      Hora: <strong>{{ proximaCita.hora }}</strong><br />
+      Psicologo: <strong>{{ proximaCita.nombre_psicologo }}</strong><br />
+    </ion-card-content>
+  </ion-card>
+</ion-content>

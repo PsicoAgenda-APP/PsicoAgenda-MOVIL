@@ -1,0 +1,45 @@
+<ion-header [translucent]="true">
+  <ion-toolbar class="barra">
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="search-bar-container" >
+    <ion-searchbar placeholder="Buscar Psicólogo"></ion-searchbar>
+    <ion-button class="botonagenda">Buscar</ion-button>
+  </div>
+  <div class="card-container">
+    <ion-card class="custom-card" *ngFor="let x of paginatedItems; let i = index">
+      <ion-item-divider>
+        <ion-card-header>
+          <ion-card-title style="--color: #027f99; font-weight: bold;">{{ x.Nombre }}</ion-card-title>
+          <ion-card-subtitle>
+            <ion-chip [outline]="true">{{ x.NombreEspecialidad }}</ion-chip>
+          </ion-card-subtitle>
+        </ion-card-header>
+      </ion-item-divider>
+      <ion-item-divider>
+        <ion-card-content>
+          <p>{{ x.Descripcion }}</p>
+          <p hidden id="id_psicologo_{{i}}">{{ x.IdPsicologo }}</p>
+        </ion-card-content>
+      </ion-item-divider>
+      <ion-item-divider>
+        <ion-card-content>
+          <p>Desde ${{ x.ValorSesion }}/sesión.</p>
+        </ion-card-content>
+      </ion-item-divider>
+      <ion-item-divider>
+        <ion-card-content>
+          <ion-button class="botonagenda" (click)="agendarCita(i)" >Agenda Tu Hora</ion-button>
+        </ion-card-content>
+      </ion-item-divider>
+    </ion-card>
+  </div>
+  <div *ngIf="totalPages > 1" class="pagination-container">
+    <ion-button class="botonagenda" *ngFor="let page of [].constructor(totalPages); let i = index" (click)="goToPage(i+1)">
+      {{ i + 1 }}
+    </ion-button>
+  </div>
+</ion-content>
+
