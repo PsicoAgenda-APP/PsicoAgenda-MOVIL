@@ -39,6 +39,10 @@ const routes: Routes = [
     path: 'commitpay',
     loadChildren: () => import('./pages/commitpay/commitpay.module').then( m => m.CommitpayPageModule)
   },
+  {
+    path: 'soportepaciente',
+    loadChildren: () => import('./pages/soportepaciente/soportepaciente.module').then( m => m.SoportepacientePageModule)
+  },
 ];
 
 @NgModule({

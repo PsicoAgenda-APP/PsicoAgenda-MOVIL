@@ -1,13 +1,26 @@
 <ion-header [translucent]="true">
   <ion-toolbar class="barra">
+    <ion-back-button  slot="start" (click)="goHome()">VOLVER</ion-back-button>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <div class="search-bar-container" >
-    <ion-searchbar placeholder="Buscar Psicólogo"></ion-searchbar>
-    <ion-button class="botonagenda">Buscar</ion-button>
+<ion-content *ngIf="!loading">
+  <ion-img class="imagen_carga" src="../../../assets/img/loading.gif"></ion-img>
+</ion-content>
+<ion-content *ngIf="loading">
+  <div class="search-bar-container">
+    <ion-searchbar [(ngModel)]="mdl_dato" placeholder="Buscar Psicólogo"></ion-searchbar>
+    <ion-button style="height: 42px" class="botonagenda" (click)="buscarPsicologo()">Buscar</ion-button>
   </div>
+  <ion-grid>
+    <ion-col>
+      <ion-select fill="outline" [(ngModel)]="mdl_dato2" interface="popover" placeholder="Especialidad">
+        <ion-select-option>Especialidad</ion-select-option>
+        <ion-select-option *ngFor="let especialiadades of lista_especialidades">{{ especialiadades.NombreEspecialidad
+          }}</ion-select-option>
+      </ion-select>
+    </ion-col>
+  </ion-grid>
   <div class="card-container">
     <ion-card class="custom-card" *ngFor="let x of paginatedItems; let i = index">
       <ion-item-divider>
@@ -31,15 +44,14 @@
       </ion-item-divider>
       <ion-item-divider>
         <ion-card-content>
-          <ion-button class="botonagenda" (click)="agendarCita(i)" >Agenda Tu Hora</ion-button>
+          <ion-button class="botonagenda" (click)="agendarCita(i)">Agenda Tu Hora</ion-button>
         </ion-card-content>
       </ion-item-divider>
     </ion-card>
   </div>
   <div *ngIf="totalPages > 1" class="pagination-container">
-    <ion-button class="botonagenda" *ngFor="let page of [].constructor(totalPages); let i = index" (click)="goToPage(i+1)">
+    <ion-button class="paginas" *ngFor="let page of [].constructor(totalPages); let i = index" (click)="goToPage(i+1)">
       {{ i + 1 }}
     </ion-button>
   </div>
 </ion-content>
-

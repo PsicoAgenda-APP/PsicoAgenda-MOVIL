@@ -21,6 +21,7 @@ export class LoginPage implements OnInit {
   error_mensaje: any = '';
   idTipo: number = 0;
   idUsuario: number = 0;
+  idPersona: number = 0;
   login2: boolean = false;
 
   constructor(private router: Router, private apiService: ApiService) { }
@@ -51,6 +52,7 @@ export class LoginPage implements OnInit {
           this.correo = this.lista_respuesta[x].CorreoElectronico;
           this.idTipo = this.lista_respuesta[x].IdTipoUsuario;
           this.idUsuario = this.lista_respuesta[x].IdUsuario;
+          this.idPersona = this.lista_respuesta[x].IdPersona;
           console.log(this.contrasena)
           console.log(this.correo)
           console.log('ID: ', this.idUsuario)
@@ -61,7 +63,9 @@ export class LoginPage implements OnInit {
                 state: {
                   idUsuario: this.idUsuario,
                   idTipoUsuario: this.idTipo,
-                  login: this.login2
+                  login: this.login2,
+                  correo: this.correo,
+                  idPersona: this.idPersona
                 },
                 replaceUrl: true
               }

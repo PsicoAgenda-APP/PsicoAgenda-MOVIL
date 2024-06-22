@@ -46,7 +46,7 @@ export class CommitpayPage implements OnInit {
                 authorization_code: response.authorization_code,
                 buy_order: response.buy_order,
               };
-              this.apiService.confirmarCita(this.idPaciente, this.idCita).subscribe(
+              this.apiService.confirmarCita(this.idPaciente, 1,this.idCita).subscribe(
                 response => {
                   console.log('Cita Agendada Correctamente', response);
                 },

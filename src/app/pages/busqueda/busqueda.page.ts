@@ -14,7 +14,9 @@ export class BusquedaPage implements OnInit {
 
   showOptions: boolean = false;
   lista_respuesta: any[] = [];
-  dato: string = '';
+  criterio: number = 0;
+  mdl_dato: string = '';
+  mdl_dato2: string = '';
   currentPage = 1;
   itemsPerPage = 5;
   totalPages: number = 0;
@@ -23,17 +25,26 @@ export class BusquedaPage implements OnInit {
   idPsicologo: string = '';
   loading: boolean = false;
   idPaciente: number = 0;
+  correo: string = '';
+  lista_especialidades: any = [];
+  especialidad: string = 'Especialidad';
+  idTipo: number = 0;
+  idPersona: number = 0;
 
   ngOnInit() {
+    this.especialidades();
+    this.busqueda();
     setTimeout(() => {
       this.loading = true;
     }, 1500);
-    this.busqueda();
     let parametros = this.router.getCurrentNavigation();
     if (parametros?.extras.state) {
-      this.dato = parametros?.extras.state['dato'];
-      this.login = parametros?.extras.state['login'];
+      this.idTipo = parametros?.extras.state['idTipoUsuario'];
       this.idPaciente = parametros?.extras.state['idPaciente'];
+      this.idUsuario = parametros?.extras.state['idUsuario'];
+      this.login = parametros?.extras.state['login'];
+      this.correo = parametros?.extras.state['correo'];
+      this.idPersona = parametros?.extras.state['idPersona'];
     }
   }
 
@@ -46,9 +57,13 @@ export class BusquedaPage implements OnInit {
       console.log('El ID del usuario como texto es:', this.idPsicologo);
       let parametros: NavigationExtras = {
         state: {
-          idPsicologo: this.idPsicologo,
+          login: this.login,
           idPaciente: this.idPaciente,
-          login: this.login
+          correo: this.correo,
+          idUsuario: this.idUsuario,
+          idTipo: this.idTipo,
+          idPsicologo: this.idPsicologo,
+          idPersona: this.idPersona
         },
         replaceUrl: true
       }
@@ -73,6 +88,10 @@ export class BusquedaPage implements OnInit {
     console.log(this.lista_respuesta)
   }
 
+  async busquedaParametros() {
+    
+  }
+
   toggleOptions() {
     this.showOptions = !this.showOptions;
   }
@@ -95,7 +114,12 @@ export class BusquedaPage implements OnInit {
     if (this.login) {
       let parametros: NavigationExtras = {
         state: {
-          login: this.login
+          login: this.login,
+          idPaciente: this.idPaciente,
+          correo: this.correo,
+          idUsuario: this.idUsuario,
+          idTipo: this.idTipo,
+          idPersona: this.idPersona
         },
         replaceUrl: true
       }
@@ -105,6 +129,120 @@ export class BusquedaPage implements OnInit {
         replaceUrl: true
       }
       this.router.navigate(['home'], parametros);
+    }
+  }
+
+  async especialidades() {
+    let data = this.apiService.especilidades();
+    let respuesta = await lastValueFrom (data);
+    let jsonTexto = JSON.stringify(respuesta);
+    let json = JSON.parse(jsonTexto);
+    for (let x = 0; x < json.length; x++) {
+      this.lista_especialidades.push(json[x]);
+    }
+  }
+
+  goHistorial() {
+    console.log('Login: ', this.login)
+    let parametros: NavigationExtras = {
+      state: {
+        login: this.login,
+        idPaciente: this.idPaciente,
+        correo: this.correo,
+        idUsuario: this.idUsuario,
+        idTipo: this.idTipo,
+        idPersona: this.idPersona
+      },
+      replaceUrl: true
+    }
+    this.router.navigate(['atencionespaciente'], parametros);
+  }
+
+  goEditar () {
+    let parametros: NavigationExtras = {
+      state: {
+        login: this.login,
+        idPaciente: this.idPaciente,
+        correo: this.correo,
+        idUsuario: this.idUsuario,
+        idTipo: this.idTipo,
+        idPersona: this.idPersona
+      },
+      replaceUrl: true
+    }
+    this.router.navigate(['editarpaciente'], parametros);
+  }
+
+  logout() {
+    this.login = false;
+    let parametros: NavigationExtras = {
+      state: {
+        login: this.login
+      },
+      replaceUrl: true
+    }
+    this.router.navigate(['home'], parametros);
+  }
+
+
+  async buscarPsicologo() {
+    console.log(this.mdl_dato)
+    console.log(this.mdl_dato2)
+    if (this.mdl_dato2 == 'Especialidad') {
+      this.mdl_dato2 = '';
+    }
+    if (this.mdl_dato != '' && this.mdl_dato2 != '' && this.mdl_dato2 != 'Especialidad' ) {
+      this.lista_respuesta = [];
+      this.totalPages = 0;
+      this.criterio = 3;
+      let data = this.apiService.buscarPsicologos(this.criterio, this.mdl_dato, this.mdl_dato2);
+      let respuesta = await lastValueFrom(data);
+      let jsonTexto = JSON.stringify(respuesta);
+      let json = JSON.parse(jsonTexto);
+      for (let x = 0; x < json.length; x++) {
+        this.lista_respuesta.push(json[x]);
+        this.totalPages = Math.ceil(this.lista_respuesta.length / this.itemsPerPage);
+    }
+    } else if (this.mdl_dato2 != '') {
+      this.lista_respuesta = [];
+      this.totalPages = 0;
+      this.criterio = 2;
+      let data = this.apiService.buscarPsicologos(this.criterio, this.mdl_dato2, this.mdl_dato2);
+      let respuesta = await lastValueFrom(data);
+      let jsonTexto = JSON.stringify(respuesta);
+      let json = JSON.parse(jsonTexto);
+      for (let x = 0; x < json.length; x++) {
+        this.lista_respuesta.push(json[x]);
+        this.totalPages = Math.ceil(this.lista_respuesta.length / this.itemsPerPage);
+      }
+    } else if (this.mdl_dato != '') {
+      this.lista_respuesta = [];
+      this.totalPages = 0;
+      this.criterio = 1;
+      let data = this.apiService.buscarPsicologos(this.criterio, this.mdl_dato, this.mdl_dato2);
+      let respuesta = await lastValueFrom(data);
+      let jsonTexto = JSON.stringify(respuesta);
+      let json = JSON.parse(jsonTexto);
+      for (let x = 0; x < json.length; x++) {
+        this.lista_respuesta.push(json[x]);
+        this.totalPages = Math.ceil(this.lista_respuesta.length / this.itemsPerPage);
+      }
+    } else  {
+      this.lista_respuesta = [];
+      this.totalPages = 0;
+      this.criterio = 0;
+      this.busqueda();
+    }
+  }
+
+  async buscador() {
+    let data = this.apiService.buscarPsicologos(this.criterio, this.mdl_dato, this.mdl_dato2);
+    let respuesta = await lastValueFrom(data);
+    let jsonTexto = JSON.stringify(respuesta);
+    let json = JSON.parse(jsonTexto);
+    for (let x = 0; x < json.length; x++) {
+      this.lista_respuesta.push(json[x]);
+      this.totalPages = Math.ceil(this.lista_respuesta.length / this.itemsPerPage);
     }
   }
 
