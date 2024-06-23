@@ -26,7 +26,6 @@
   </ion-content>
 </ion-menu>
 
-<!-- Contenido principal -->
 <div class="ion-page" id="main-content">
   <ion-header [translucent]="true">
     <ion-toolbar class="barra">
@@ -38,22 +37,21 @@
 
   <ion-content [fullscreen]="true">
     <div class="ion-padding">
-      <h1 class="texto-home">PsicoAgenda</h1>
-      <h2 class="subtexto">¡Bienvenid&#64; {{ nombre }}!</h2>
-      <h3 class="titulo-atenciones">Próximas Atenciones</h3>
-      <div *ngIf="!showAtencionesCitasEmptyMessage">
-        <ion-card *ngFor="let cita of atencionesCitas; let i = index" class="citasencurso">
+      <h1 class="texto-home">Ficha del Paciente</h1>
+      <div *ngIf="fichasPaciente.length > 0">
+        <ion-card *ngFor="let ficha of fichasPaciente" class="citasencurso">
           <ion-card-content>
-            Fecha: <strong>{{ cita.FechaCita }}</strong><br />
-            Hora: <strong>{{ cita.HoraCita }}</strong><br />
-            Paciente: <strong>{{ cita.Nombre_Paciente }}</strong><br />
-            <ion-button expand="block" (click)="verFicha(i)">Ver Ficha</ion-button>
+            <p><strong>Fecha:</strong> {{ ficha.fecha }}</p>
+            <p><strong>Hora:</strong> {{ ficha.hora }}</p>
+            <p><strong>Psicólogo:</strong> {{ ficha.nombre_psicologo }}</p>
+            <p><strong>Diagnóstico:</strong> {{ ficha.Diagnostico }}</p>
+            <p><strong>Tratamiento:</strong> {{ ficha.Tratamiento }}</p>
           </ion-card-content>
         </ion-card>
       </div>
-      <ion-card *ngIf="showAtencionesCitasEmptyMessage" class="citasencurso">
+      <ion-card *ngIf="fichasPaciente.length === 0" class="citasencurso">
         <ion-card-content>
-          <strong>No hay próximas atenciones  asignada</strong>
+          <strong>No se encontraron fichas para el paciente seleccionado.</strong>
         </ion-card-content>
       </ion-card>
     </div>

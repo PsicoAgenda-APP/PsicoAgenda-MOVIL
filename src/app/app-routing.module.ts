@@ -43,6 +43,22 @@ const routes: Routes = [
     path: 'soportepaciente',
     loadChildren: () => import('./pages/soportepaciente/soportepaciente.module').then( m => m.SoportepacientePageModule)
   },
+  {
+    path: 'fichapsicologo',
+    loadChildren: () => import('./pages/fichapsicologo/fichapsicologo.module').then( m => m.FichapsicologoPageModule)
+  },
+  {
+    path: 'atencionespaciente',
+    loadChildren: () => import('./pages/atencionespaciente/atencionespaciente.module').then( m => m.AtencionespacientePageModule)
+  },
+  {
+    path: 'historialpsicologo',
+    loadChildren: () => import('./pages/historialpsicologo/historialpsicologo.module').then( m => m.HistorialpsicologoPageModule)
+  },
+  {
+    path: 'editarpsicologo',
+    loadChildren: () => import('./pages/editarpsicologo/editarpsicologo.module').then( m => m.EditarpsicologoPageModule)
+  },
 ];
 
 @NgModule({

@@ -3,6 +3,10 @@ import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { ApiService } from 'src/app/services/api.service';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
+import { Filesystem, Directory, Encoding, FilesystemEncoding } from '@capacitor/filesystem';
+import { Platform } from '@ionic/angular';
+
 
 @Component({
   selector: 'app-commitpay',
@@ -27,7 +31,8 @@ export class CommitpayPage implements OnInit {
   error: boolean = false;
   idPersona: number = 0;
 
-  constructor(private router: Router, private route: ActivatedRoute, private apiService: ApiService) { }
+  constructor(private router: Router, private route: ActivatedRoute, private apiService: ApiService,
+    private fileOpener: FileOpener, private platform: Platform) { }
 
   ngOnInit() {
     this.route.queryParams.subscribe((params) => {
@@ -52,7 +57,7 @@ export class CommitpayPage implements OnInit {
         console.log(this.nombrePsicologo);
         console.log(this.fechaCita);
         console.log(this.horaCita);
-        
+
         if (this.token_ws) {
           this.apiService.commitTransaction(this.token_ws).subscribe(
             (response) => {
@@ -67,6 +72,7 @@ export class CommitpayPage implements OnInit {
                   authorization_code: response.authorization_code,
                   buy_order: response.buy_order,
                 };
+
                 this.apiService.confirmarCita(this.idPaciente, 1, this.idCita).subscribe(
                   response => {
                     console.log('Cita Agendada Correctamente', response);
@@ -87,7 +93,7 @@ export class CommitpayPage implements OnInit {
               this.errorMessage = 'ERROR EN LA TRANSACCIÓN, SE CANCELO EL PAGO.';
               this.error = true;
               localStorage.clear();
-            } 
+            }
           );
         } else {
           this.errorMessage = 'ERROR EN LA TRANSACCIÓN, SE CANCELO EL PAGO.';
@@ -99,8 +105,21 @@ export class CommitpayPage implements OnInit {
         this.router.navigate(['home']);
       }
     });
+    this.reloadOnce();
   }
 
+  reloadOnce() {
+    // Verifica si la página ya ha sido recargada
+    const reloaded = localStorage.getItem('pageReloaded');
+    if (!reloaded) {
+      // Si no ha sido recargada, recargarla y establecer la bandera en el almacenamiento local
+      localStorage.setItem('pageReloaded', 'true');
+      location.reload();
+    } else {
+      // Si ya ha sido recargada, eliminar la bandera
+      localStorage.removeItem('pageReloaded');
+    }
+  }
   sendEmail() {
     const subject = 'Hora Agendada en PsicoAgenda';
 
@@ -131,12 +150,12 @@ export class CommitpayPage implements OnInit {
 
   }
 
-  downloadPDF() {
+  async downloadPDF() {
     const element = document.getElementById('tbl-transaction-detail');
 
     if (element) {
       const scale = 2; // Aumenta este valor para mejorar la calidad
-      html2canvas(element, { scale }).then(canvas => {
+      html2canvas(element, { scale }).then(async canvas => {
         const imgData = canvas.toDataURL('image/png');
         const pdf = new jsPDF('landscape', 'mm', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -147,13 +166,50 @@ export class CommitpayPage implements OnInit {
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
         pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight); // agregar la imagen con márgenes
-        pdf.save('Comprobante.pdf');
+        const pdfOutput = pdf.output('blob'); // Obtener el Blob del PDF
+
+        const reader = new FileReader();
+        reader.readAsDataURL(pdfOutput);
+        reader.onloadend = async () => {
+          const base64data = reader.result as string;
+          const pdfData = base64data.split(',')[1]; // Obtener solo la parte de datos
+
+          await this.saveFile(pdfData, 'Comprobante.pdf');
+        };
       });
     } else {
       console.error('El elemento con id "tbl-transaction-detail" no se encontró.');
     }
   }
 
+  async saveFile(data: string, fileName: string) {
+    try {
+      if (this.platform.is('android')) {
+        const permissions = await Filesystem.requestPermissions();
+        if (permissions.publicStorage !== 'granted') {
+          console.error('Permissions not granted');
+          return;
+        }
+      }
+
+      // Guardar el archivo en el directorio externo de documentos
+      const result = await Filesystem.writeFile({
+        path: fileName,
+        data: data,
+        directory: Directory.External, // Cambiado a Directory.External
+        encoding: Encoding.UTF8
+      });
+      console.log('File saved:', result);
+
+      // Abrir el archivo con FileOpener
+      const path = result.uri;
+      await this.fileOpener.open(path, 'application/pdf')
+        .then(() => console.log('File is opened'))
+        .catch(e => console.log('Error opening file', e));
+    } catch (e) {
+      console.error('Unable to write file', e);
+    }
+  }
 
   toggleOptions() {
     this.showOptions = !this.showOptions;
@@ -186,7 +242,7 @@ export class CommitpayPage implements OnInit {
     }
   }
 
-  goSoporte () {
+  goSoporte() {
     let parametros: NavigationExtras = {
       state: {
         login: this.login,
@@ -228,7 +284,7 @@ export class CommitpayPage implements OnInit {
     this.router.navigate(['atencionespaciente'], parametros);
   }
 
-  goEditar () {
+  goEditar() {
     let parametros: NavigationExtras = {
       state: {
         login: this.login,

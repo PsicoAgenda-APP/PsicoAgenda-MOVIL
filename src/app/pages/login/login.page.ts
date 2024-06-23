@@ -75,7 +75,9 @@ export class LoginPage implements OnInit {
                 state: {
                   idUsuario: this.idUsuario,
                   idTipo: this.idTipo,
-                  login: this.login2
+                  login: this.login2,
+                  correo: this.correo,
+                  idPersona: this.idPersona
                 },
                 replaceUrl: true
               }

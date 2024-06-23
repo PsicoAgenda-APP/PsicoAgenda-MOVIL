@@ -38,22 +38,21 @@
 
   <ion-content [fullscreen]="true">
     <div class="ion-padding">
-      <h1 class="texto-home">PsicoAgenda</h1>
-      <h2 class="subtexto">¡Bienvenid&#64; {{ nombre }}!</h2>
-      <h3 class="titulo-atenciones">Próximas Atenciones</h3>
-      <div *ngIf="!showAtencionesCitasEmptyMessage">
-        <ion-card *ngFor="let cita of atencionesCitas; let i = index" class="citasencurso">
+      <h1 class="texto-home">Historial de Atenciones</h1>
+      <div *ngIf="!showHistorialCitasEmptyMessage">
+        <ion-card *ngFor="let cita of historialCitas; let i = index" class="citasencurso">
           <ion-card-content>
             Fecha: <strong>{{ cita.FechaCita }}</strong><br />
             Hora: <strong>{{ cita.HoraCita }}</strong><br />
             Paciente: <strong>{{ cita.Nombre_Paciente }}</strong><br />
+            <p hidden id="id_paciente_{{i}}">{{ cita.IdPaciente }}</p>
             <ion-button expand="block" (click)="verFicha(i)">Ver Ficha</ion-button>
           </ion-card-content>
         </ion-card>
       </div>
-      <ion-card *ngIf="showAtencionesCitasEmptyMessage" class="citasencurso">
+      <ion-card *ngIf="showHistorialCitasEmptyMessage" class="citasencurso">
         <ion-card-content>
-          <strong>No hay próximas atenciones  asignada</strong>
+          <strong>No hay historial de citas asignadas</strong>
         </ion-card-content>
       </ion-card>
     </div>
