@@ -20,4 +20,11 @@ export class HomePage implements OnInit {
     this.router.navigate(['login'], parametros);
   }
 
+  registro() {
+    let parametros: NavigationExtras = {
+      replaceUrl: true
+    }
+    this.router.navigate(['tiporegistro'], parametros)
+  }
+
 }

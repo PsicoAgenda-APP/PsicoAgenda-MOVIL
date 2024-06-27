@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
+import { DbService } from 'src/app/services/db.service';
 
 @Component({
   selector: 'app-soportepaciente',
@@ -52,7 +53,7 @@ export class SoportepacientePage implements OnInit {
   botonFinal: boolean = false;
   listaReagendar: boolean = false;
 
-  constructor(private router: Router, private apiService: ApiService) { }
+  constructor(private router: Router, private apiService: ApiService, private dbService: DbService) { }
 
   ngOnInit() {
     let parametros = this.router.getCurrentNavigation();
@@ -192,6 +193,7 @@ export class SoportepacientePage implements OnInit {
   }
 
   logout() {
+    this.dbService.limpiarTablaUsuario();
     this.login = false;
     let parametros: NavigationExtras = {
       state: {

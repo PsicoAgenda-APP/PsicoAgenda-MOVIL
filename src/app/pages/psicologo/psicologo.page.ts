@@ -25,13 +25,12 @@ export class PsicologoPage implements OnInit {
   nombre: string = '';
   lista_datos: any = [];
   idPaciente: number = 0;
+  isLoading: boolean = true;
 
   constructor(private router: Router, private apiService: ApiService) { }
 
   async ngOnInit() {
-    setTimeout(() => {
-      this.loading = true;
-    }, 1500);
+    this.loadCitas();
     let parametros = this.router.getCurrentNavigation();
     if (parametros?.extras.state) {
       this.idPsicologo = parametros?.extras.state['idPsicologo'];
@@ -65,6 +64,12 @@ export class PsicologoPage implements OnInit {
       }
       this.obtenerAtencionesPsicologo();
     }
+  }
+
+  loadCitas() {
+    setTimeout(() => {
+      this.isLoading = false;
+    }, 2500); // Simula un tiempo de carga de 2 segundos
   }
 
   async obtenerAtencionesPsicologo() {
@@ -191,20 +196,20 @@ export class PsicologoPage implements OnInit {
   }
 
   goSoporte() {
+    console.log('Login: ', this.login);
     let parametros: NavigationExtras = {
       state: {
         login: this.login,
-        idPaciente: this.idPsicologo,
-        correo: this.correo,
+        idPsicologo: this.idPsicologo,
         idUsuario: this.idUsuario,
+        correo: this.correo,
         idTipo: this.idTipo,
         idPersona: this.idPersona
       },
       replaceUrl: true
-    }
-    this.router.navigate(['soportepaciente'], parametros);
+    };
+    this.router.navigate(['soportepsicologo'], parametros);
   }
-
 }
 
 

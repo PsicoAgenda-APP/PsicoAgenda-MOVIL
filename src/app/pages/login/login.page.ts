@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
+import { DbService } from 'src/app/services/db.service';
 
 @Component({
   selector: 'app-login',
@@ -24,13 +25,16 @@ export class LoginPage implements OnInit {
   idPersona: number = 0;
   login2: boolean = false;
 
-  constructor(private router: Router, private apiService: ApiService) { }
+  constructor(private router: Router, private apiService: ApiService, private dbService: DbService) { }
 
   ngOnInit() {
   }
 
   volver() {
-    this.router.navigate(['home'])
+    let parametros: NavigationExtras = {
+      replaceUrl: true
+    }
+    this.router.navigate(['home'], parametros)
   }
 
   async login() {
@@ -59,6 +63,7 @@ export class LoginPage implements OnInit {
           if (this.mdl_contrasena == this.contrasena && this.mdl_correo == this.correo) {
             this.login2 = true;
             if (this.idTipo == 1) {
+              this.dbService.crearSesion(this.idUsuario, '1', this.idTipo, this.correo, this.idPersona);
               let parametros: NavigationExtras = {
                 state: {
                   idUsuario: this.idUsuario,
@@ -71,6 +76,7 @@ export class LoginPage implements OnInit {
               }
               this.router.navigate(['cliente'], parametros);
             } else if (this.idTipo == 2) {
+              this.dbService.crearSesion(this.idUsuario, '1', this.idTipo, this.correo, this.idPersona);
               let parametros: NavigationExtras = {
                 state: {
                   idUsuario: this.idUsuario,

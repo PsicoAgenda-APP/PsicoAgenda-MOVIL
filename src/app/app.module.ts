@@ -10,6 +10,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
 import { HttpClientModule } from '@angular/common/http';
 
+import { File } from '@awesome-cordova-plugins//file/ngx';
 import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
 
 
@@ -18,7 +19,7 @@ import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
   declarations: [AppComponent],
   imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule, HttpClientModule],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, SQLite,
-    FileOpener],
+    FileOpener, File],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

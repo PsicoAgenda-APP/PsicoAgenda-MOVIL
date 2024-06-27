@@ -42,16 +42,15 @@
   </ion-header>
 
   <ion-content>
-    <div *ngIf="transactionDetail; else errorTemplate">
+    <div id="PDF" *ngIf="transactionDetail; else errorTemplate" style="margin-left: 1%; margin-right: 1%;">
+      <div class="receipt-header">
+        <img src="../../../assets/img/psicoagendalogo.png" alt="Logo" class="header-logo" />
+        <h1>PsicoAgenda</h1>
+      </div>
+      <h2>Comprobante de Pago</h2>
+      <p>El pago de su cita #{{ idCita }} ha sido procesado correctamente.</p>
+      <p>Se adjuntan los datos de la transacción:</p>
       <table id="tbl-transaction-detail">
-        <caption>Detalle de Pago: <strong>SUCCESS PAY</strong></caption>
-        <thead>
-          <tr hidden>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
         <tbody>
           <tr>
             <td><strong>Estado:</strong></td>
@@ -95,15 +94,17 @@
           </tr>
         </tbody>
       </table>
+      <p>WebPay Plus es solo el facilitador del proceso de pago y no se hace responsable sobre la entrega de productos y
+        servicios. Cualquier duda o consulta por favor contacta al comercio.</p>
     </div>
-    <table class="botones">
+    <table class="botones" style="margin-left: 1%; margin-right: 1%; margin-bottom: 20px;">
       <ion-button *ngIf="transactionDetail" class="boton" (click)="goHome()">Volver</ion-button>
       <ion-button *ngIf="transactionDetail" class="boton" (click)="downloadPDF()">Descargar Comprobante</ion-button>
     </table>
     <ng-template #errorTemplate>
       <div class="center-content">
         <h2>{{ errorMessage }}</h2>
-        <ion-button *ngIf="error"  class="boton" (click)="goHome()">Volver</ion-button>
+        <ion-button *ngIf="error" class="boton" (click)="goHome()">Volver</ion-button>
       </div>
     </ng-template>
   </ion-content>

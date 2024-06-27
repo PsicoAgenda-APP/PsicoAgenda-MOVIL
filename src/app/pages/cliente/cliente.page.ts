@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
+import { DbService } from 'src/app/services/db.service';
 
 @Component({
   selector: 'app-cliente',
@@ -25,7 +26,7 @@ export class ClientePage implements OnInit {
   idPersona: number = 0;
 
 
-  constructor(private router: Router, private apiService: ApiService) { }
+  constructor(private router: Router, private apiService: ApiService, private dbService: DbService) { }
 
   async ngOnInit() {
     let parametros = this.router.getCurrentNavigation();
@@ -128,6 +129,7 @@ export class ClientePage implements OnInit {
   }
 
   logout() {
+    this.dbService.limpiarTablaUsuario();
     this.login = false;
     let parametros: NavigationExtras = {
       state: {

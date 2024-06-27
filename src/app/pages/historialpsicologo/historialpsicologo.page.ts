@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
 import { ApiService } from 'src/app/services/api.service';
 import { lastValueFrom } from 'rxjs';
+import { DbService } from 'src/app/services/db.service';
 
 @Component({
   selector: 'app-historialpsicologo',
@@ -22,7 +23,7 @@ export class HistorialpsicologoPage implements OnInit {
   idTipo: number = 0;
   idUsuario: number = 0;
 
-  constructor(private router: Router, private apiService: ApiService) {}
+  constructor(private router: Router, private apiService: ApiService, private dbService: DbService) {}
 
   ngOnInit() {
     let parametros = this.router.getCurrentNavigation();
@@ -123,13 +124,14 @@ export class HistorialpsicologoPage implements OnInit {
   }
 
   logout() {
+    this.dbService.limpiarTablaUsuario();
     this.login = false;
     let parametros: NavigationExtras = {
       state: {
-        login: this.login,
+        login: this.login
       },
-      replaceUrl: true,
-    };
+      replaceUrl: true
+    }
     this.router.navigate(['home'], parametros);
   }
 
@@ -169,5 +171,21 @@ export class HistorialpsicologoPage implements OnInit {
       };
       this.router.navigate(['home'], parametros);
     }
+  }
+
+  goSoporte() {
+    console.log('Login: ', this.login);
+    let parametros: NavigationExtras = {
+      state: {
+        login: this.login,
+        idPsicologo: this.idPsicologo,
+        idUsuario: this.idUsuario,
+        correo: this.correo,
+        idTipo: this.idTipo,
+        idPersona: this.idPersona
+      },
+      replaceUrl: true
+    };
+    this.router.navigate(['soportepsicologo'], parametros);
   }
 }

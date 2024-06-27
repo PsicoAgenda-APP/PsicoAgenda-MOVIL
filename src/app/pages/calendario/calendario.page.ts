@@ -6,6 +6,7 @@ import { Browser } from '@capacitor/browser';
 import { Platform } from '@ionic/angular';
 import { lastValueFrom } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
+import { DbService } from 'src/app/services/db.service';
 
 
 @Component({
@@ -42,7 +43,7 @@ export class CalendarioPage implements OnInit {
 
 
   constructor(private router: Router, private apiService: ApiService, private platform: Platform,
-  ) { }
+    private dbService: DbService) { }
 
   async ngOnInit() {
     const currentDate = new Date();
@@ -200,6 +201,7 @@ export class CalendarioPage implements OnInit {
   }
 
   logout() {
+    this.dbService.limpiarTablaUsuario();
     this.login = false;
     let parametros: NavigationExtras = {
       state: {

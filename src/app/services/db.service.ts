@@ -14,7 +14,7 @@ export class DbService {
       location: 'default'
     })
       .then((db: SQLiteObject) => {
-          db.executeSql('CREATE TABLE IF NOT EXISTS Usuario (IdUsuario INTEGER , Activo INTEGER)', [])
+          db.executeSql('CREATE TABLE IF NOT EXISTS Usuario (IdUsuario INTEGER, Activo INTEGER, IdTipo INTEGER, Correo TEXT, IdPersona INTEGER)', [])
           .then(() => console.log('FSR: TABLA CREADA OK'))
           .catch(e => console.log('FSR: ' + JSON.stringify(e)));
       }) 
@@ -28,7 +28,7 @@ export class DbService {
       location: 'default'
     })
       .then((db: SQLiteObject) => {
-        return db.executeSql('SELECT IdUsuario, Activo FROM Usuario', [])
+        return db.executeSql('SELECT IdUsuario, Activo, IdTipo, Correo, IdPersona FROM Usuario', [])
           .then((data) => {
             let lista_sesiones = [];
 
@@ -47,13 +47,13 @@ export class DbService {
       });
   }
 
-  crearSesion(usuario: number, activo: number) {
+  crearSesion(usuario: number, activo: string, idTipo: number, correo: string, idPersona: number) {
     this.sqlite.create({
       name: 'data.db',
       location: 'default'
     })
       .then((db: SQLiteObject) => {
-        db.executeSql('INSERT INTO Usuario (IdUsuario, Activo) VALUES (?, ?)', [usuario, activo])
+        db.executeSql('INSERT INTO Usuario (IdUsuario, Activo, IdTipo, Correo, IdPersona) VALUES (?, ?, ?, ?, ?)', [usuario, activo, idTipo, correo, idPersona])
         .then(() => console.log('FSR: SESION CREADA'))
         .catch(e => console.log('FSR: ' + JSON.stringify(e)));
       })
@@ -68,6 +68,19 @@ export class DbService {
       .then((db: SQLiteObject) => {
         db.executeSql('UPDATE SESION SET Activo = ? WHERE IdUsuario = ?', [activo, usuario])
         .then(() => console.log('FSR: SESION ACTUALIZADA'))
+        .catch(e => console.log('FSR: ' + JSON.stringify(e)));
+      })
+      .catch(e => console.log('FSR: ' + JSON.stringify(e))); 
+  }
+
+  limpiarTablaUsuario() {
+    this.sqlite.create({
+      name: 'data.db',
+      location: 'default'
+    })
+      .then((db: SQLiteObject) => {
+        db.executeSql('DELETE FROM Usuario', [])
+        .then(() => console.log('FSR: TABLA USUARIO LIMPIADA'))
         .catch(e => console.log('FSR: ' + JSON.stringify(e)));
       })
       .catch(e => console.log('FSR: ' + JSON.stringify(e))); 

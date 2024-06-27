@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { ApiService } from 'src/app/services/api.service';
-import jsPDF from 'jspdf';
+import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
-import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
-import { Filesystem, Directory, Encoding, FilesystemEncoding } from '@capacitor/filesystem';
-import { Platform } from '@ionic/angular';
-
+import { File } from '@awesome-cordova-plugins//file/ngx';
+import { FileOpener } from '@awesome-cordova-plugins//file-opener/ngx';
+import { Platform } from '@ionic/angular'
+import { DbService } from 'src/app/services/db.service';
 
 @Component({
   selector: 'app-commitpay',
@@ -32,7 +32,7 @@ export class CommitpayPage implements OnInit {
   idPersona: number = 0;
 
   constructor(private router: Router, private route: ActivatedRoute, private apiService: ApiService,
-    private fileOpener: FileOpener, private platform: Platform) { }
+    private fileOpener: FileOpener, private platform: Platform, private file: File, private dbService: DbService) { }
 
   ngOnInit() {
     this.route.queryParams.subscribe((params) => {
@@ -102,7 +102,10 @@ export class CommitpayPage implements OnInit {
         }
       } catch (error) {
         console.error('Error parsing JSON', error);
-        this.router.navigate(['home']);
+        let parametros: NavigationExtras = {
+          replaceUrl: true
+        }
+        this.router.navigate(['home'], parametros);
       }
     });
     this.reloadOnce();
@@ -150,66 +153,58 @@ export class CommitpayPage implements OnInit {
 
   }
 
-  async downloadPDF() {
-    const element = document.getElementById('tbl-transaction-detail');
+  downloadPDF() {
+    const data = document.getElementById('PDF');
 
-    if (element) {
-      const scale = 2; // Aumenta este valor para mejorar la calidad
-      html2canvas(element, { scale }).then(async canvas => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('landscape', 'mm', 'a4');
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
+    if (data) {
+      html2canvas(data, { scale: 2 }).then(canvas => {
+        const imgWidth = 210; // Ancho de la página A4 en mm
+        const pageHeight = 295; // Altura de la página A4 en mm
+        const margin = 5; // Margen de 5mm
+        const imgHeight = canvas.height * imgWidth / canvas.width;
 
-        // Calcular nuevas dimensiones de la imagen para que se ajuste a la página A4 en landscape
-        const imgWidth = pdfWidth - 20; // margen de 10mm en cada lado
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        // Redimensionar para ajustar todo el contenido en una página
+        const scale = Math.min(1, (pageHeight - 2 * margin) / imgHeight);
+        const scaledWidth = imgWidth * scale - 2 * margin;
+        const scaledHeight = imgHeight * scale;
 
-        pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight); // agregar la imagen con márgenes
-        const pdfOutput = pdf.output('blob'); // Obtener el Blob del PDF
+        const doc = new jsPDF('p', 'mm', 'a4');
 
-        const reader = new FileReader();
-        reader.readAsDataURL(pdfOutput);
-        reader.onloadend = async () => {
-          const base64data = reader.result as string;
-          const pdfData = base64data.split(',')[1]; // Obtener solo la parte de datos
+        // Centrar la imagen en la página
+        const xPos = (imgWidth - scaledWidth) / 2;
+        const yPos = margin;
 
-          await this.saveFile(pdfData, 'Comprobante.pdf');
-        };
-      });
-    } else {
-      console.error('El elemento con id "tbl-transaction-detail" no se encontró.');
-    }
-  }
+        doc.addImage(canvas.toDataURL('image/png'), 'PNG', xPos, yPos, scaledWidth + 2 * margin, scaledHeight);
 
-  async saveFile(data: string, fileName: string) {
-    try {
-      if (this.platform.is('android')) {
-        const permissions = await Filesystem.requestPermissions();
-        if (permissions.publicStorage !== 'granted') {
-          console.error('Permissions not granted');
-          return;
+        const pdfOutput = doc.output();
+        const buffer = new ArrayBuffer(pdfOutput.length);
+        const array = new Uint8Array(buffer);
+        for (let i = 0; i < pdfOutput.length; i++) {
+          array[i] = pdfOutput.charCodeAt(i);
         }
-      }
 
-      // Guardar el archivo en el directorio externo de documentos
-      const result = await Filesystem.writeFile({
-        path: fileName,
-        data: data,
-        directory: Directory.External, // Cambiado a Directory.External
-        encoding: Encoding.UTF8
+        const fileName = `Comprobante_${this.idCita}.pdf`;
+
+        if (this.platform.is('cordova')) {
+          this.file.writeFile(this.file.dataDirectory, fileName, buffer, { replace: true }).then(fileEntry => {
+            this.fileOpener.open(fileEntry.nativeURL, 'application/pdf');
+          }).catch(error => {
+            console.error('Error writing file', error);
+          });
+        } else {
+          const blob = new Blob([buffer], { type: 'application/pdf' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = fileName;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        }
       });
-      console.log('File saved:', result);
-
-      // Abrir el archivo con FileOpener
-      const path = result.uri;
-      await this.fileOpener.open(path, 'application/pdf')
-        .then(() => console.log('File is opened'))
-        .catch(e => console.log('Error opening file', e));
-    } catch (e) {
-      console.error('Unable to write file', e);
     }
   }
+
 
   toggleOptions() {
     this.showOptions = !this.showOptions;
@@ -258,6 +253,7 @@ export class CommitpayPage implements OnInit {
   }
 
   logout() {
+    this.dbService.limpiarTablaUsuario();
     this.login = false;
     let parametros: NavigationExtras = {
       state: {

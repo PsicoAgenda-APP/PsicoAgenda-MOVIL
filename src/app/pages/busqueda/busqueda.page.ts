@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
+import { DbService } from 'src/app/services/db.service';
 
 @Component({
   selector: 'app-busqueda',
@@ -10,7 +11,7 @@ import { ApiService } from 'src/app/services/api.service';
 })
 export class BusquedaPage implements OnInit {
 
-  constructor(private router: Router, private apiService: ApiService) { }
+  constructor(private router: Router, private apiService: ApiService, private dbService: DbService) { }
 
   showOptions: boolean = false;
   lista_respuesta: any[] = [];
@@ -157,6 +158,7 @@ export class BusquedaPage implements OnInit {
   }
 
   logout() {
+    this.dbService.limpiarTablaUsuario();
     this.login = false;
     let parametros: NavigationExtras = {
       state: {

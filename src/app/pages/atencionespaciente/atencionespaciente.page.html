@@ -52,8 +52,8 @@
                 <p><strong>Psicologo: </strong>{{ cita.nombre_psicologo }}</p>
               </ion-col>
               <ion-col size="2" class="icon-col">
-                <ion-icon style="font-size: 50px;" name="document-outline"></ion-icon>
-                <ion-text style="text-align: center; color: rgb(145, 145, 145);" >Informe</ion-text>
+                <ion-icon style="font-size: 50px;" name="document-outline" (click)="generarPDF(cita)"></ion-icon>
+                <ion-text style="text-align: center; color: rgb(145, 145, 145);" (click)="generarPDF(cita)">Informe</ion-text>
               </ion-col>
             </ion-row>
           </ion-grid>

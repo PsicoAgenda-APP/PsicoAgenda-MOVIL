@@ -12,7 +12,8 @@ ion-button {
     margin-left: auto;
     margin-right: auto;
     max-width: 90%;
-    margin-top: 30px;
+    margin-top: 15px;
+    margin-bottom: 10px;
 }
 
 .citasencurso {
@@ -69,5 +70,16 @@ ion-img {
   
   .citasencurso {
     margin-bottom: 20px;
+  }
+
+  .loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .loading-image {
+    width: 100px; /* Ajusta el tamaño de la imagen según sea necesario */
+    height: 100px;
   }
   
