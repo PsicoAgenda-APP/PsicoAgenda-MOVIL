@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
 import { ApiService } from 'src/app/services/api.service';
 import { lastValueFrom } from 'rxjs';
+import { DbService } from 'src/app/services/db.service';
 
 @Component({
   selector: 'app-psicologo',
@@ -27,7 +28,7 @@ export class PsicologoPage implements OnInit {
   idPaciente: number = 0;
   isLoading: boolean = true;
 
-  constructor(private router: Router, private apiService: ApiService) { }
+  constructor(private router: Router, private apiService: ApiService, private dbService: DbService) { }
 
   async ngOnInit() {
     this.loadCitas();
@@ -147,6 +148,7 @@ export class PsicologoPage implements OnInit {
   }
 
   logout() {
+    this.dbService.limpiarTablaUsuario();
     this.login = false;
     let parametros: NavigationExtras = {
       state: {
