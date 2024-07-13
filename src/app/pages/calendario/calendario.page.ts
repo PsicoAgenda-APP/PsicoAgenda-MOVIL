@@ -280,6 +280,7 @@ export class CalendarioPage implements OnInit {
           localStorage.setItem('horaCita', JSON.stringify(this.horaCita));
           localStorage.setItem('idPersona', JSON.stringify(this.idPersona));
           localStorage.setItem('idUsuario', JSON.stringify(this.idUsuario));
+          localStorage.setItem('idTipo', JSON.stringify(this.idTipo));
           await InAppBrowser.openWebView({ url: `${response.url}?token_ws=${response.token}` });
           // Aquí es donde se invoca el listener
           InAppBrowser.addListener('urlChangeEvent', async (event: any) => {

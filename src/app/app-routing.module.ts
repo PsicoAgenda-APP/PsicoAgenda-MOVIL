@@ -79,6 +79,22 @@ const routes: Routes = [
     path: 'registropsicologo',
     loadChildren: () => import('./pages/registropsicologo/registropsicologo.module').then( m => m.RegistropsicologoPageModule)
   },
+  {
+    path: 'chat',
+    loadChildren: () => import('./pages/chat/chat.module').then( m => m.ChatPageModule)
+  },
+  {
+    path: 'listachat',
+    loadChildren: () => import('./pages/listachat/listachat.module').then( m => m.ListachatPageModule)
+  },
+  {
+    path: 'listachatpsicologo',
+    loadChildren: () => import('./pages/listachatpsicologo/listachatpsicologo.module').then( m => m.ListachatpsicologoPageModule)
+  },
+  {
+    path: 'chatpsicologo',
+    loadChildren: () => import('./pages/chatpsicologo/chatpsicologo.module').then( m => m.ChatpsicologoPageModule)
+  },
 ];
 
 @NgModule({

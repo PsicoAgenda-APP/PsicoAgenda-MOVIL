@@ -33,6 +33,7 @@ export class ApiService {
   rutaAsignadas = 'https://psicoagenda-api.azurewebsites.net/usuarios/citas_asignadas/'
   rutaPersona = 'https://psicoagenda-api.azurewebsites.net/usuarios/datosPaciente/'
   rutaFinalizarCita = 'https://psicoagenda-api.azurewebsites.net/paciente/finalizarCita/'
+  rutaChat = 'https://psicoagenda-api.azurewebsites.net/usuarios/datosChat/'
   
   constructor(private http: HttpClient) { }
 
@@ -49,6 +50,10 @@ export class ApiService {
 
   adminCita(criterio: number, dato: string) {
     return this.http.get(this.rutaMantenedorCita + '?Criterio=' + criterio + '&Dato=' + dato).pipe();
+  }
+
+  idChat(criterio: number, dato: string) {
+    return this.http.get(this.rutaChat + '?Criterio=' + criterio + '&Dato=' + dato).pipe();
   }
 
   buscarPsicologos(criterio: number, dato: string, dato2: string) {

@@ -170,4 +170,19 @@ export class ClientePage implements OnInit {
     }
     this.router.navigate(['editarpaciente'], parametros);
   }
+
+  goChat () {
+    let parametros: NavigationExtras = {
+      state: {
+        login: this.login,
+        idPaciente: this.idPaciente,
+        correo: this.correo,
+        idUsuario: this.idUsuario,
+        idTipo: this.idTipo,
+        idPersona: this.idPersona
+      },
+      replaceUrl: true
+    }
+    this.router.navigate(['listachat'], parametros);
+  }
 }

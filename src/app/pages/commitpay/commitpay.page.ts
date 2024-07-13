@@ -42,6 +42,7 @@ export class CommitpayPage implements OnInit {
           this.token_ws = parametros?.extras.state['token_ws'];
         }
         this.idCita = JSON.parse(localStorage.getItem('idCita') || '0');
+        this.idTipo = JSON.parse(localStorage.getItem('idTipo') || '0');
         this.idPaciente = JSON.parse(localStorage.getItem('idPaciente') || '0');
         this.login = JSON.parse(localStorage.getItem('login') || 'false');
         this.correo = JSON.parse(localStorage.getItem('correo') || '');

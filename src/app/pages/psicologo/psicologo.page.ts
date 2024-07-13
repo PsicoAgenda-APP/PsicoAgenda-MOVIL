@@ -212,6 +212,21 @@ export class PsicologoPage implements OnInit {
     };
     this.router.navigate(['soportepsicologo'], parametros);
   }
+
+  goChat() {
+    let parametros: NavigationExtras = {
+      state: {
+        login: this.login,
+        idPsicologo: this.idPsicologo,
+        idUsuario: this.idUsuario,
+        correo: this.correo,
+        idTipo: this.idTipo,
+        idPersona: this.idPersona
+      },
+      replaceUrl: true
+    }
+    this.router.navigate(['listachatpsicologo'], parametros);
+  }
 }
 
 
